@@ -45,16 +45,17 @@ var loadTasks = function () {
 var saveTasks = function () {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
-
-$(".card .list-group-flush").sortable({
-  connectWith: $(".card .list-group-flush"),
+//enable draggable/sortable feature on list-group elements
+$(".card .list-group").sortable({
+  // enable draggin across lists
+  connectWith: $(".card .list-group"),
   scroll: false,
   tolernace: "pointer",
   helper: "clone",
-  activate: function (event) {
+  activate: function (event, ui) {
     console.log("activate", this);
   },
-  deactivate: function (event) {
+  deactivate: function (event, ui) {
     console.log("deactivate", this);
   },
   over: function (event) {
@@ -63,34 +64,32 @@ $(".card .list-group-flush").sortable({
   out: function (event) {
     console.log("out", event.target);
   },
-  update: function (event) {
-    // array to store the task data in
+  update: function () {
     var tempArr = [];
 
     // loop over current set of children in sortable list
-    $(this).children().each(function() {
-      var text = $(this)
-      .find("p")
-      .text()
-      .trim();
-
-      var date = $(this)
-      .find("span")
-      .text()
-      .trim();
-
-      // add task data to the temp array as an object
+    $(this)
+    .children()
+    .each(function () {
+      // save values in temp array
       tempArr.push({
-        text: text,
-        date: date
+      text: $(this)
+        .find("p")
+        .text()
+        .trim(),
+      date: $(this)
+        .find("span")
+        .text()
+        .trim()
+
       });
     });
     console.log(tempArr);
 
     // trim down list's ID to match object property
     var arrName = $(this)
-    .attr("id")
-    .replace("list-", "");
+      .attr("id")
+      .replace("list-", "");
 
     // update array on tasks object and save
     tasks[arrName] = tempArr;
@@ -102,14 +101,13 @@ $(".card .list-group-flush").sortable({
 $("#trash").droppable({
   accept: ".card .list-group-item",
   tolerance: "touch",
-  drop: function(event, ui) {
+  drop: function (event, ui) {
     ui.draggable.remove();
-    
   },
-  over: function(event, ui) {
+  over: function (event, ui) {
     console.log("over");
   },
-  out: function(event, ui) {
+  out: function (event, ui) {
     console.log("out");
   }
 });
